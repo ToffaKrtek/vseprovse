@@ -1,0 +1,62 @@
+version: '3'
+
+# Надо вынести раскидать все по подпапкам - само приложение в src
+services: 
+    # PHP
+    app:
+        build: ./php
+        # image: php:7.4.24-fpm
+        restart: always
+        volumes: 
+            - ./src/:/var/www/html/vseprovse
+            # - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        depends_on:
+          - db
+        links:
+          - db
+    
+    # Nginx http://localhost:8040/
+    nginx:
+        image: nginx:alpine
+        restart: always
+        ports: 
+            - "8040:80"
+            - "8443:443"
+        volumes: 
+            - ./src/:/var/www/html/vseprovse
+            - ./nginx/:/etc/nginx/conf.d
+            # - ./nginx/conf.d/:/etc/nginx/conf.d/
+        depends_on:
+        - app
+        links:
+          - app
+    
+    # MySQL
+    db:
+        image: mysql:5.6
+        restart: always
+        ports: 
+            - "33061:3306"
+        #Мб кинуть в файл с конфигами - брать как переменную
+        environment: 
+            MYSQL_DATABASE: vseprovsedb
+            MYSQL_ROOT_PASSWORD: rootpassword 
+            MYSQL_USER: vseprovseuser
+            MYSQL_PASSWORD: userpassword
+        volumes: 
+            - ./mysql/lib:/var/lib/mysql/
+            - ./mysql/dump:/docker-entrypoint-initdb.d:rw
+            # - ./mysql/my.cnf:/etc/mysql/my.cnf
+        command: --default-authentication-plugin=mysql_native_password
+        # command: ["mysql", "./mysql/entrypoint/createdb.sql"]
+
+    # Админка для БД http://localhost:8099/
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - "8099:8080"
+        depends_on:
+          - db
+        links:
+          - db

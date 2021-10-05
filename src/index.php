@@ -9,8 +9,14 @@ require_once ROOT . "/vendor/autoload.php";
 use app\controllers\AdController;
 
 $adc = new AdController;
-
-$ads = $adc->indexAction();
+if (!isset($_GET['page']))
+{
+    $start = 0;
+} else
+{
+    $start = $_GET['page'];
+}
+$content = $adc->indexAction($start);
 ?>
 <style>
     html {
@@ -42,7 +48,7 @@ $ads = $adc->indexAction();
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($ads as $ad)
+            <?php foreach ($content['ads'] as $ad)
             {
                 ?>
             <tr >
@@ -55,6 +61,21 @@ $ads = $adc->indexAction();
             ?>
         </tbody>
     </table>
+<p>
+    <?php 
+        if($content['prev'])
+        {
+    ?>
+        <a href="index.php?page=<?= $content['page'] - 1;?>"><--</a>
+    <?php
+        }
+        if ($content['next'])
+        {
+    ?>
+        <a href="index.php?page=<?= $content['page'] + 1;?>">--></a></p>
+    <?php
+        }
+    ?>
 </div>
 <br>
 <div class="form">

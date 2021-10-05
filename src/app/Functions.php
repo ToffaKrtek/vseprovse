@@ -1,5 +1,5 @@
 <?php
-namespace app\Functions;
+namespace app;
 
 function csv_to_array($filename='', $delimiter=',')
 {

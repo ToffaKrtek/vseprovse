@@ -22,4 +22,5 @@ class AdController
     {
         return $this->model->create($contacts, $content);
     }
+   
 }

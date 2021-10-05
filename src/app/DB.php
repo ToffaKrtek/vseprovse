@@ -16,7 +16,7 @@
         }
         public function getAll($table)
         {
-            $stm = $this->db->query("SELECT * FROM `$table`");
+            $stm = $this->db->query("SELECT * FROM `$table` ORDER BY `$table`.uploaded DESC ");
             return $stm->fetchAll();
         }
         public function create($table, $contacts, $content)
